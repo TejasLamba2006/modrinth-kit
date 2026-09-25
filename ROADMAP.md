@@ -13,18 +13,24 @@ v0.1 covers **author workflows**: projects, gallery, versions and files, team, o
 
 That's all: the CLI command, the MCP tool and the reference docs are generated from the operation automatically.
 
-## B: account and social
+## B: account and social (done in 0.2.0)
 
-- [ ] `follow.add` / `follow.remove` / `user.follows`
-- [ ] Collections (v3): list, create, update, delete, add/remove projects
-- [ ] Notifications: list, mark read, delete (single and bulk)
-- [ ] Reports: submit, list your reports, get, update
-- [ ] Threads: get a project's moderation thread, send a message, delete a message (for replying to moderators)
-- [ ] `user.get`, `user.update` (bio, username), user icon set/delete
-- [ ] `team.join` (accept an invite)
-- [ ] Bulk project edit (`PATCH /projects`)
-- [ ] `version.from-hashes` and latest-version-by-hash updates (useful for modpack tooling)
-- [ ] Project/version disclosures (v3)
+- [x] `follow.add` / `follow.remove` / `user.follows`
+- [x] Collections (v3): list, get, create, update (incl. add/remove projects), icon, delete
+- [x] Notifications: list, get, mark read, delete (single and bulk)
+- [x] Reports: create, list, get, update
+- [x] Threads: get (by ID or a project's), send, delete message
+- [x] `user.get`, `user.update`, user icon set/delete
+- [x] `team.join`
+- [x] `project.bulk-update`
+- [x] `version.from-hashes`, `version.latest` (update checking by hash)
+- [x] Project disclosures (v3)
+
+Still open in this area:
+
+- [ ] Friends and blocked users (v3)
+- [ ] User preferences (v3)
+- [ ] OAuth applications
 
 ## C: money and moderation (high risk)
 
@@ -39,6 +45,6 @@ These need extra guardrails before an agent should touch them: each should proba
 
 - [ ] Local audit log of write operations (JSONL)
 - [ ] `sync` support for version metadata (edit existing versions from the manifest)
-- [ ] `sync` for donation links
-- [ ] Nightly integration test against staging (`MODRINTH_STAGING_TOKEN`)
+- [x] `sync` for donation links (`[[donations]]`)
+- [x] Nightly integration test against staging (`test/staging.sh`, `.github/workflows/staging.yml`)
 - [ ] Automatic retry/resume for large uploads

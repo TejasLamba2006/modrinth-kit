@@ -2,7 +2,7 @@
 
 A single tool for managing Modrinth projects from the terminal, from AI coding agents, and from CI.
 
-- **CLI**: `modrinth <command>` covers every author action the website offers: create and edit projects, manage the gallery, upload versions, manage team members and organizations, and read analytics.
+- **CLI**: `modrinth <command>` covers what you can do on the website as a project author and user: create and edit projects, manage the gallery, upload versions, manage team members and organizations, read analytics, reply to moderators, and manage collections, follows, notifications, and reports.
 - **MCP server**: `modrinth mcp` exposes the same operations as tools for Claude Code, Claude Desktop, Cursor, and other MCP clients.
 - **CI**: check a `modrinth.toml` into your repo, then use `modrinth sync` to keep the project page in step with it and `modrinth publish` to release versions. The same commands run in the included GitHub Action and in any other CI.
 
@@ -44,6 +44,8 @@ modrinth version create my-plugin --version-number 1.2.0 --files build/libs/my-p
 modrinth gallery add my-plugin screenshots/menu.png --title "Menu" --featured
 modrinth team member update my-plugin alice --permissions UPLOAD_VERSION,EDIT_BODY
 modrinth analytics get --start 2026-09-01T00:00:00Z --pretty
+modrinth thread send --project my-plugin --body "Fixed the issue you mentioned, resubmitting."
+modrinth version latest --hashes $(sha1sum my-plugin.jar | cut -d' ' -f1) --loaders paper --game-versions 1.21.11
 modrinth help version create
 ```
 
@@ -95,7 +97,7 @@ For Claude Code: `claude mcp add modrinth -e MODRINTH_TOKEN=mrp_... -- npx -y mo
 
 | Flag | Tools exposed |
 |---|---|
-| (none) | All 42 tools. Destructive tools take a `confirm` argument; without it they return a preview. |
+| (none) | All 72 tools. Destructive tools take a `confirm` argument; without it they return a preview. |
 | `--allow read,write` | No destructive tools, and status changes can only return previews. |
 | `--read-only` | Only the read tools. |
 | `--staging` | Same tools, pointed at the staging API. |
@@ -125,6 +127,7 @@ See [docs/ci.md](docs/ci.md) for full workflows, including other CI systems.
 npm install
 npm run dev -- project get sodium   # run from source
 npm test                            # unit tests
+bash test/staging.sh                # end-to-end against staging (needs MODRINTH_STAGING_TOKEN)
 npm run typecheck
 npm run gen:types                   # regenerate src/client/generated.ts from spec/openapi.yaml
 npm run gen:docs                    # regenerate docs/reference

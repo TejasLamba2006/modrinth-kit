@@ -38,6 +38,7 @@ export async function gatherDesired({ manifest: m, root }: LoadedManifest): Prom
     if (m.links[k] !== undefined) update[`${k}_url`] = m.links[k] === "" ? null : m.links[k];
   }
 
+  if (m.donations) update.donation_urls = m.donations.map((d) => ({ id: d.platform, platform: d.platform, url: d.url }));
   const desired: Desired = { project: m.project, update };
   if (md.icon) {
     const file = resolve(root, md.icon);
@@ -53,6 +54,7 @@ export async function gatherDesired({ manifest: m, root }: LoadedManifest): Prom
 const REMOTE_KEY: Record<string, string> = { summary: "description" };
 
 function remoteValue(p: Project, key: string): unknown {
+  if (key === "donation_urls") return (p.donation_urls ?? []).map((d) => ({ id: d.id, platform: d.id, url: d.url }));
   if (key === "license_id") return p.license?.id;
   if (key === "license_url") return p.license?.url ?? null;
   return (p as Record<string, unknown>)[REMOTE_KEY[key] ?? key] ?? null;
@@ -60,7 +62,10 @@ function remoteValue(p: Project, key: string): unknown {
 
 const norm = (v: unknown) => (typeof v === "string" ? v.replace(/\r\n/g, "\n").trim() : v);
 const same = (a: unknown, b: unknown) => {
-  if (Array.isArray(a) && Array.isArray(b)) return JSON.stringify([...a].sort()) === JSON.stringify([...b].sort());
+  if (Array.isArray(a) && Array.isArray(b)) {
+    const key = (x: unknown) => JSON.stringify(x);
+    return JSON.stringify(a.map(key).sort()) === JSON.stringify(b.map(key).sort());
+  }
   return JSON.stringify(norm(a)) === JSON.stringify(norm(b));
 };
 

@@ -1,0 +1,23 @@
+name: Staging integration
+on:
+  schedule: [{ cron: "41 3 * * *" }]
+  workflow_dispatch:
+jobs:
+  staging:
+    if: ${{ github.repository == 'TejasLamba2006/modrinth-kit' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci && npm run build
+      - name: Check secret
+        id: secret
+        env: { T: "${{ secrets.MODRINTH_STAGING_TOKEN }}" }
+        run: echo "set=$([ -n "$T" ] && echo yes || echo no)" >> "$GITHUB_OUTPUT"
+      - if: steps.secret.outputs.set == 'yes'
+        run: bash test/staging.sh
+        env:
+          MODRINTH_STAGING_TOKEN: ${{ secrets.MODRINTH_STAGING_TOKEN }}
+      - if: steps.secret.outputs.set != 'yes'
+        run: echo "::warning::MODRINTH_STAGING_TOKEN secret not set; skipping"

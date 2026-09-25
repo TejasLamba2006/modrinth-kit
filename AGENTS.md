@@ -4,7 +4,7 @@ This file is for AI agents that use modrinth-kit through the CLI or the MCP serv
 
 ## Rules
 
-1. **Preview destructive actions, then ask.** Deletes, ownership transfers, `project.submit`, schedules, and status changes return `{"confirmRequired":true,"wouldDo":"..."}` unless you pass `--yes` (CLI) or `confirm: true` (MCP). Show `wouldDo` to the user word for word. Repeat the call with confirmation only after the user explicitly approves.
+1. **Preview destructive actions, then ask.** Deletes, ownership transfers, `project.submit`, reports to moderators, and status changes return `{"confirmRequired":true,"wouldDo":"..."}` unless you pass `--yes` (CLI) or `confirm: true` (MCP). Show `wouldDo` to the user word for word. Repeat the call with confirmation only after the user explicitly approves.
 2. **Before `sync`, always run `sync --dry-run`** and show the list of changes.
 3. **Look up valid values first.** Before setting categories, loaders, game versions, or licenses, call `tag list <type>`. Guessed values fail with `invalid`.
 4. **Read the error.** Errors are JSON with `code` and `hint`. On `auth`, the hint names the token scope that's missing; tell the user instead of retrying.
@@ -32,6 +32,9 @@ This file is for AI agents that use modrinth-kit through the CLI or the MCP serv
 | Screenshots | `modrinth gallery add/update/delete`, or list them under `[[gallery]]` and run `sync` |
 | Make a draft public | `modrinth project submit <p>` (destructive; ask first) |
 | Downloads and views | `modrinth analytics get --start <iso>` |
+| Answer a moderator | `modrinth thread get --project <p>`, then `modrinth thread send --project <p> --body "..."` |
+| Check for updates of a jar | `modrinth version latest --hashes <sha1> --loaders paper --game-versions 1.21.11` |
+| Accept a team invite | `modrinth notification list`, then `modrinth team join <project>` |
 
 Run `modrinth ops` to get the full operation list as JSON, and `modrinth help <op>` for the flags of any operation. MCP tool names are the operation names with `.` and `-` replaced by `_` (`project.icon.set` becomes `project_icon_set`).
 

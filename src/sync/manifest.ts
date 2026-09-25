@@ -42,6 +42,9 @@ export const manifestSchema = z.object({
     .strict()
     .default({}),
   gallery: z.array(galleryEntry).optional(),
+  donations: z
+    .array(z.object({ platform: z.string().describe("id from `tag list donation_platform`, e.g. patreon, ko-fi"), url: z.string().url() }))
+    .optional(),
   version: z
     .object({
       files: z.array(z.string()).min(1),

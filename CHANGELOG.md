@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.2.0] - 2026-09-26
+
+Account and social operations (roadmap scope B). All verified against the Modrinth staging API.
+
+### Added
+- Users: `user get`, `user update` (username, display name, bio), `user icon set` / `user icon delete`.
+- Follows: `follow add`, `follow remove`, `user follows`.
+- Notifications: `notification list [--unread]`, `notification get`, `notification read` and `notification delete` (single or bulk).
+- Reports: `report create` (needs confirmation; it goes to moderators), `report list`, `report get`, `report update`.
+- Moderation threads: `thread get` (by ID or `--project`), `thread send` (reply to moderators), `thread message delete`.
+- Collections (v3): `collection list/get/create/update/icon set/delete`; `update` supports `--add` / `--remove`.
+- `team join` to accept an invite, `project bulk-update` for many projects at once.
+- `version from-hashes` and `version latest` (newest compatible version for file hashes).
+- `project disclosures get/set` (v3 content disclosures: telemetry, AI use, ads, paid features...).
+- `[[donations]]` in modrinth.toml, managed by `sync`.
+- `test/staging.sh` end-to-end script and a nightly staging workflow.
+
 ## [0.1.1] - 2026-09-26
 
 Every operation was exercised end to end against the Modrinth staging API (CLI and MCP).

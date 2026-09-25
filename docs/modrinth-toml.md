@@ -32,6 +32,11 @@ issues = "https://github.com/me/my-plugin/issues"
 wiki = "https://github.com/me/my-plugin/wiki"
 discord = "https://discord.gg/invite"
 
+# Donation links: when present, the list replaces the project's donation links.
+[[donations]]
+platform = "ko-fi"                    # see `modrinth tag list donation_platform`
+url = "https://ko-fi.com/me"
+
 # Gallery: one [[gallery]] block per image...
 [[gallery]]
 file = "assets/gallery/menu.png"
