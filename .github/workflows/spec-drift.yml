@@ -1,0 +1,20 @@
+name: Modrinth spec drift
+on:
+  schedule: [{ cron: "17 6 * * 1" }]
+  workflow_dispatch:
+permissions: { issues: write, contents: read }
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: curl -fsSL https://docs.modrinth.com/openapi.yaml -o /tmp/openapi.yaml
+      - name: Open issue if the upstream spec changed
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          if ! diff -q spec/openapi.yaml /tmp/openapi.yaml; then
+            title="Modrinth OpenAPI spec changed"
+            gh issue list --state open --search "$title in:title" --json number -q '.[0].number' | grep -q . && exit 0
+            { echo "Upstream spec differs from spec/openapi.yaml. Update it, run \`npm run gen:types\`, and check \`npm run typecheck\`."; echo; echo '```diff'; diff -u spec/openapi.yaml /tmp/openapi.yaml | head -300; echo '```'; } > body.md
+            gh issue create --title "$title" --body-file body.md
+          fi

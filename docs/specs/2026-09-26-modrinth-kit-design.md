@@ -31,7 +31,7 @@ src/client/http.ts       fetch wrapper: auth, User-Agent, staging, retries, erro
 src/client/v3.ts         hand-typed v3 endpoints (orgs, analytics — absent from the v2 spec)
 src/op.ts                defineOp({ name, tier, summary, description, input, examples, run })
 src/ops/*.ts             the registry, grouped by resource
-src/cli/                 commander; commands built from the registry + sync/publish/init/auth
+src/cli/                 small argv parser; commands built from the registry + sync/publish/init/auth
 src/mcp/                 @modelcontextprotocol/sdk; one tool per registry op
 src/sync/                modrinth.toml -> plan -> apply
 scripts/gen-docs.ts      registry -> docs/reference/*.md
@@ -41,8 +41,11 @@ action.yml               composite GitHub Action running the CLI
 Every CLI call, MCP call, and sync step goes through `op.run(input, ctx)`; `ctx` carries the
 HTTP client, confirm flag, and dry-run flag. There is no second code path.
 
-Runtime deps: `commander`, `zod`, `@modelcontextprotocol/sdk`, `smol-toml`. Node >= 20 (native
-fetch / FormData / Blob). Dev: `typescript`, `openapi-typescript`, `tsx`.
+Runtime deps: `zod`, `@modelcontextprotocol/sdk`, `smol-toml`. Node >= 22 (native fetch / FormData /
+Blob / fs.glob). Dev: `typescript` 5.x (openapi-typescript breaks on TS 7), `openapi-typescript`, `tsx`.
+
+Deviation from first draft: commander dropped. Commands are generated from the registry at runtime,
+so a ~100-line parser in `src/cli/args.ts` is simpler than adapting commander.
 
 ## Output contract
 

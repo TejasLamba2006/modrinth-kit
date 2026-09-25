@@ -1,0 +1,59 @@
+name: modrinth-kit
+description: Publish versions and sync project pages on Modrinth
+author: TejasLamba2006
+branding:
+  icon: upload-cloud
+  color: green
+
+inputs:
+  token:
+    description: Modrinth personal access token
+    required: false
+  command:
+    description: modrinth-kit command line, e.g. "publish 1.2.0" or "sync --yes"
+    default: sync
+  working-directory:
+    description: Directory containing modrinth.toml
+    default: .
+  staging:
+    description: Use the Modrinth staging API
+    default: "false"
+  version:
+    description: npm version of modrinth-kit to run
+    default: "0"
+
+outputs:
+  result:
+    description: JSON printed by the command
+    value: ${{ steps.run.outputs.result }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+    - id: run
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        MODRINTH_TOKEN: ${{ inputs.token }}
+        MK_COMMAND: ${{ inputs.command }}
+        MK_STAGING: ${{ inputs.staging }}
+        MK_VERSION: ${{ inputs.version }}
+      run: |
+        extra=()
+        [ "$MK_STAGING" = "true" ] && extra+=(--staging)
+        # word-split the command on purpose; values come from the workflow author
+        # shellcheck disable=SC2086
+        set +e
+        out=$(npx -y "modrinth-kit@$MK_VERSION" $MK_COMMAND "${extra[@]}")
+        code=$?
+        set -e
+        echo "$out"
+        {
+          echo "result<<__MK_EOF__"
+          echo "$out"
+          echo "__MK_EOF__"
+        } >> "$GITHUB_OUTPUT"
+        exit $code
