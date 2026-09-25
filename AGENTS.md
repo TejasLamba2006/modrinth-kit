@@ -40,5 +40,7 @@ Run `modrinth ops` to get the full operation list as JSON, and `modrinth help <o
 - Plugins use `project_type: mod` on the v2 API. The version loaders (`paper`, `spigot`, `folia`...) are what make a project a plugin.
 - `summary` in modrinth-kit is the field Modrinth's API calls `description`: the short text shown in search. `body` is the long markdown description.
 - New projects are always created as drafts. `project submit` sends a draft to moderators for review.
+- Plugins (paper, spigot, folia... loaders) have no client/server side; omit `client_side`/`server_side` when updating them.
+- Modrinth removed project/version scheduling from its API (still listed in the official spec, returns 404), so there is no schedule operation.
 - Gallery images are identified by their `url`, which you get from `gallery list`.
 - Organizations and analytics use Modrinth's v3 API, which upstream marks as unstable.

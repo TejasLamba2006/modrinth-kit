@@ -160,24 +160,6 @@ export const projectSubmit = defineOp({
   },
 });
 
-export const projectSchedule = defineOp({
-  name: "project.schedule",
-  tier: "destructive",
-  scope: "PROJECT_WRITE",
-  summary: "Schedule an approved project to change status (e.g. go public) at a future time",
-  input: z.object({
-    project: projectId,
-    time: z.string().datetime().describe("ISO-8601 time"),
-    requested_status: z.enum(["approved", "archived", "unlisted", "private", "draft"]),
-  }),
-  positional: ["project"],
-  preview: (i) => `schedule project ${i.project} to become ${i.requested_status} at ${i.time}`,
-  async run({ project, ...json }, ctx) {
-    await ctx.client.request("POST", `/project/${enc(project)}/schedule`, { json, scope: "PROJECT_WRITE" });
-    return { ok: true, project, ...json };
-  },
-});
-
 export const projectDelete = defineOp({
   name: "project.delete",
   tier: "destructive",
@@ -236,7 +218,6 @@ export default [
   projectCreate,
   projectUpdate,
   projectSubmit,
-  projectSchedule,
   projectDelete,
   iconSet,
   iconDelete,

@@ -152,15 +152,16 @@ export const versionFileAdd = defineOp({
   input: z.object({ version: versionId, files: strList.min(1), file_types: z.record(z.string(), fileType).optional() }),
   positional: ["version"],
   async run({ version, files, file_types }, ctx) {
+    // Modrinth requires the `data` part before any file parts.
     const form = new FormData();
     const types: Record<string, string> = {};
     const loaded = await Promise.all(files.map(loadFile));
-    loaded.forEach((f, idx) => {
-      form.set(`file${idx}`, f.blob, f.name);
+    loaded.forEach((_, idx) => {
       const t = file_types?.[files[idx]!];
       if (t) types[`file${idx}`] = t;
     });
     form.set("data", JSON.stringify({ file_types: types }));
+    loaded.forEach((f, idx) => form.set(`file${idx}`, f.blob, f.name));
     await ctx.client.request("POST", `/version/${enc(version)}/file`, { body: form, scope: "VERSION_WRITE" });
     return { ok: true, version, added: loaded.map((f) => ({ name: f.name, sha1: f.sha1 })) };
   },
@@ -181,20 +182,6 @@ export const versionFileDelete = defineOp({
   async run({ hash, algorithm }, ctx) {
     await ctx.client.request("DELETE", `/version_file/${enc(hash)}`, { query: { algorithm }, scope: "VERSION_WRITE" });
     return { ok: true, deleted: hash };
-  },
-});
-
-export const versionSchedule = defineOp({
-  name: "version.schedule",
-  tier: "destructive",
-  scope: "VERSION_WRITE",
-  summary: "Schedule a version to change status (e.g. become listed) at a future time",
-  input: z.object({ version: versionId, time: z.string().datetime(), requested_status: versionStatus }),
-  positional: ["version"],
-  preview: (i) => `schedule version ${i.version} to become ${i.requested_status} at ${i.time}`,
-  async run({ version, ...json }, ctx) {
-    await ctx.client.request("POST", `/version/${enc(version)}/schedule`, { json, scope: "VERSION_WRITE" });
-    return { ok: true, version, ...json };
   },
 });
 
@@ -223,6 +210,5 @@ export default [
   versionUpdate,
   versionFileAdd,
   versionFileDelete,
-  versionSchedule,
   versionDelete,
 ];

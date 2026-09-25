@@ -95,7 +95,7 @@ For Claude Code: `claude mcp add modrinth -e MODRINTH_TOKEN=mrp_... -- npx -y mo
 
 | Flag | Tools exposed |
 |---|---|
-| (none) | All 44 tools. Destructive tools take a `confirm` argument; without it they return a preview. |
+| (none) | All 42 tools. Destructive tools take a `confirm` argument; without it they return a preview. |
 | `--allow read,write` | No destructive tools, and status changes can only return previews. |
 | `--read-only` | Only the read tools. |
 | `--staging` | Same tools, pointed at the staging API. |

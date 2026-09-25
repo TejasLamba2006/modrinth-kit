@@ -37,7 +37,6 @@ Generated from the operation registry by `npm run gen:docs`. Do not edit by hand
 | [`project.create`](project.create.md) | write | Create a new project as a draft (submit it for review later with project.submit) |
 | [`project.update`](project.update.md) | write | Edit project metadata: title, summary, body, links, license, categories, sides, slug, status |
 | [`project.submit`](project.submit.md) | destructive | Submit a draft project for Modrinth moderator review (it goes public once approved) |
-| [`project.schedule`](project.schedule.md) | destructive | Schedule an approved project to change status (e.g. go public) at a future time |
 | [`project.delete`](project.delete.md) | destructive | Permanently delete a project and all its versions |
 | [`project.icon.set`](project.icon.set.md) | write | Upload a new project icon (max 256 KiB; png/jpg/webp/gif/svg...) |
 | [`project.icon.delete`](project.icon.delete.md) | destructive | Remove the project icon |
@@ -62,7 +61,6 @@ Generated from the operation registry by `npm run gen:docs`. Do not edit by hand
 | [`version.update`](version.update.md) | write | Edit a version's name, number, changelog, loaders, game versions, channel, deps, status, primary file |
 | [`version.file.add`](version.file.add.md) | write | Attach extra files to an existing version |
 | [`version.file.delete`](version.file.delete.md) | destructive | Delete a single file (by hash) from its version |
-| [`version.schedule`](version.schedule.md) | destructive | Schedule a version to change status (e.g. become listed) at a future time |
 | [`version.delete`](version.delete.md) | destructive | Delete a version and its files |
 
 ## team

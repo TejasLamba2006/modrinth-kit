@@ -145,8 +145,8 @@ export async function init(opts: { project: string; out?: string; force?: boolea
       categories: p.categories,
       additional_categories: p.additional_categories ?? [],
       license: p.license?.id,
-      client_side: p.client_side === "unknown" ? undefined : p.client_side,
-      server_side: p.server_side === "unknown" ? undefined : p.server_side,
+      // Plugins have no side fields on Modrinth; writing them back makes sync fail.
+      ...(isPlugin(p) || p.client_side === "unknown" ? {} : { client_side: p.client_side, server_side: p.server_side }),
     },
     links,
   };
@@ -183,4 +183,9 @@ export async function init(opts: { project: string; out?: string; force?: boolea
 
 function dropUndefined<T>(v: T): T {
   return JSON.parse(JSON.stringify(v));
+}
+
+const PLUGIN_LOADERS = new Set(["bukkit", "spigot", "paper", "purpur", "folia", "sponge", "bungeecord", "waterfall", "velocity"]);
+function isPlugin(p: { loaders?: string[] }): boolean {
+  return !!p.loaders?.length && p.loaders.every((l) => PLUGIN_LOADERS.has(l));
 }

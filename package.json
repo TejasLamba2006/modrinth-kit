@@ -1,6 +1,6 @@
 {
   "name": "modrinth-kit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "All-in-one Modrinth CLI, MCP server, and CI tool for project authors and coding agents",
   "type": "module",
   "bin": {
@@ -13,7 +13,8 @@
     "README.md",
     "AGENTS.md",
     "ROADMAP.md",
-    "docs"
+    "docs",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=22"

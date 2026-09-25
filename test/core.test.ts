@@ -87,6 +87,7 @@ test("argv parsing", () => {
 
 const H1 = "a".repeat(40);
 const H2 = "b".repeat(40);
+const H3 = "c".repeat(40);
 const remote = {
   id: "PID",
   slug: "p",
@@ -123,11 +124,25 @@ test("sync plan: gallery add/update/replace/prune", () => {
     gallery: [
       { file: "k.png", title: "Keep", description: "d2", featured: false, sha1: H1 },
       { file: "c.png", title: "Changed", featured: false, sha1: H2 },
-      { file: "n.png", title: "New", featured: true, sha1: H2 },
+      { file: "n.png", title: "New", featured: true, sha1: H3 },
     ],
   };
   const changes = plan(d, remote).map((s) => `${s.op}:${s.destructive}`);
   assert.deepEqual(changes, ["gallery.update:false", "gallery.delete:true", "gallery.add:false", "gallery.add:false"]);
   const pruned = plan(d, remote, { prune: true });
   assert.equal(pruned.at(-1)!.change, '- gallery "Stale" (not in manifest)');
+});
+
+test("sync plan: duplicate local images rejected, same file under new title is renamed", () => {
+  assert.throws(
+    () => plan({ project: "p", update: {}, gallery: [
+      { file: "a.png", title: "A", featured: false, sha1: H2 },
+      { file: "b.png", title: "B", featured: false, sha1: H2 },
+    ] }, remote),
+    /same file/,
+  );
+  const steps = plan({ project: "p", update: {}, gallery: [{ file: "s.png", title: "Renamed", featured: false, sha1: H1 }] }, { ...remote, gallery: [remote.gallery[2]] });
+  assert.equal(steps.length, 1);
+  assert.equal(steps[0]!.op, "gallery.update");
+  assert.equal(steps[0]!.input.title, "Renamed");
 });

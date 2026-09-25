@@ -108,12 +108,20 @@ export function mapError(
   scope: string | undefined,
   hasToken: boolean,
 ): ModrinthError {
-  const d = (data && typeof data === "object" ? data : {}) as { error?: string; description?: string };
-  const msg = d.description ?? (typeof data === "string" && data ? data : `${method} ${path} -> HTTP ${status}`);
+  const d = (data && typeof data === "object" ? data : {}) as { error?: string; description?: string; details?: unknown };
+  const base = d.description ?? (typeof data === "string" && data ? data : `${method} ${path} -> HTTP ${status}`);
+  // Newer labrinth errors put the real cause in `details`, e.g. description "editing project".
+  const detail = Array.isArray(d.details) ? d.details.filter((x) => typeof x === "string").join("; ") : "";
+  const msg = detail ? `${base}: ${detail}` : base;
+  if (/loader field `environment` does not exist/.test(msg)) {
+    return new ModrinthError("invalid", msg, status, "Plugins have no client/server side on Modrinth; drop client_side/server_side.", data);
+  }
   if (status === 401 || status === 403) {
     const hint = !hasToken
       ? "No token set. Set MODRINTH_TOKEN or run `modrinth auth login --token <pat>`."
-      : scope
+      : /verify your email/i.test(msg)
+        ? "Your Modrinth account has no verified email. Add and verify one in account settings, then retry."
+        : scope
         ? `Token may be missing the ${scope} scope, or you lack permission on this resource.`
         : "Token lacks the required scope or permission.";
     return new ModrinthError("auth", msg, status, hint, data);

@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { ModrinthError } from "../errors.js";
 import { hashFromCdnUrl, sha1 } from "../files.js";
 import type { Project } from "../ops/shared.js";
 import { expandGallery, type DesiredImage, type LoadedManifest } from "./manifest.js";
@@ -88,11 +89,31 @@ export function plan(desired: Desired, remote: Project, opts: { prune?: boolean 
   }
 
   if (desired.gallery) {
-    const remoteByTitle = new Map((remote.gallery ?? []).filter((g) => g).map((g) => [g!.title ?? "", g!]));
+    // raw_url (hash of the original upload) is returned by the API but missing from the spec.
+    const remoteHash = (g: { url: string }) => hashFromCdnUrl((g as { raw_url?: string }).raw_url ?? g.url);
+    const remoteImgs = (remote.gallery ?? []).filter((g) => g).map((g) => g!);
+    const remoteByTitle = new Map(remoteImgs.map((g) => [g.title ?? "", g]));
+    const seen = new Map<string, string>();
+    for (const img of desired.gallery) {
+      const dup = seen.get(img.sha1);
+      if (dup) throw new ModrinthError("usage", `Gallery images "${dup}" and "${img.title}" are the same file; Modrinth rejects duplicate images.`);
+      seen.set(img.sha1, img.title);
+    }
+    const wantedTitles = new Set(desired.gallery.map((i) => i.title));
     const wanted = new Set<string>();
     for (const img of desired.gallery) {
       wanted.add(img.title);
-      const r = remoteByTitle.get(img.title);
+      let r = remoteByTitle.get(img.title);
+      // Same file under a different, unclaimed title: rename in place instead of re-uploading.
+      const renamed = !r && remoteImgs.find((g) => remoteHash(g) === img.sha1 && !wantedTitles.has(g.title ?? ""));
+      if (renamed) {
+        wanted.add(renamed.title ?? "");
+        const input: Record<string, unknown> = { project, url: renamed.url, title: img.title, featured: img.featured };
+        if (img.description !== undefined) input.description = img.description;
+        if (img.ordering !== undefined) input.ordering = img.ordering;
+        steps.push({ op: "gallery.update", input, change: `~ gallery "${renamed.title}" -> "${img.title}" (renamed)`, destructive: false });
+        continue;
+      }
       const add: Step = {
         op: "gallery.add",
         input: { project, file: img.file, title: img.title, description: img.description, featured: img.featured, ordering: img.ordering },
@@ -101,8 +122,7 @@ export function plan(desired: Desired, remote: Project, opts: { prune?: boolean 
       };
       if (!r) {
         steps.push(add);
-      // raw_url (hash of the original upload) is returned by the API but missing from the spec.
-      } else if (hashFromCdnUrl((r as { raw_url?: string }).raw_url ?? r.url) !== img.sha1) {
+      } else if (remoteHash(r) !== img.sha1) {
         steps.push({ op: "gallery.delete", input: { project, url: r.url }, change: `- gallery "${img.title}" (file changed)`, destructive: true });
         steps.push({ ...add, change: `+ gallery "${img.title}" (file changed)` });
       } else {
