@@ -112,6 +112,8 @@ For Claude Code: `claude mcp add modrinth -e MODRINTH_TOKEN=mrp_... -- npx -y mo
 
 ## Agent skills
 
+![Agent skills](docs/media/agent-skills.png)
+
 Skills tell coding agents what modrinth-kit can do and how to use it safely: releasing, page sync, and every operation. Pick whichever install path suits you:
 
 ```sh
