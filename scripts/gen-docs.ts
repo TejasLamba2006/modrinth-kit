@@ -57,8 +57,20 @@ for (const [g, list] of groups) {
 }
 files.set("README.md", index.join("\n"));
 
+// Skill: splice the operation catalogue between markers in skills/modrinth-kit/SKILL.md.
+const skillPath = "skills/modrinth-kit/SKILL.md";
+const skillCur = (await readFile(skillPath, "utf8")).replace(/\r\n/g, "\n");
+const catalogue = [...groups]
+  .map(([g, list]) => `**${g}**: ` + list.map((op) => `\`${op.name.replace(/\./g, " ")}\`${op.tier === "destructive" ? " (destructive)" : ""}`).join(", "))
+  .join("\n\n");
+const skillNew = skillCur.replace(
+  /(<!-- ops:start[^\n]*-->\n)[\s\S]*?(<!-- ops:end -->)/,
+  `$1Run \`modrinth help <op>\` for flags. MCP tool = name with \`_\`.\n\n${catalogue}\n$2`,
+);
+
 if (check) {
   const stale: string[] = [];
+  if (skillNew !== skillCur) stale.push(skillPath);
   for (const [name, content] of files) {
     const cur = await readFile(join(dir, name), "utf8").catch(() => "");
     if (cur.replace(/\r\n/g, "\n") !== content) stale.push(name);
@@ -74,5 +86,6 @@ if (check) {
   await rm(dir, { recursive: true, force: true });
   await mkdir(dir, { recursive: true });
   for (const [name, content] of files) await writeFile(join(dir, name), content);
+  await writeFile(skillPath, skillNew);
   console.log(`wrote ${files.size} files to ${dir}`);
 }

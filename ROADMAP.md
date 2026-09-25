@@ -43,6 +43,8 @@ These need extra guardrails before an agent should touch them: each should proba
 
 ## Tooling
 
+- [x] Agent skills + Claude Code plugin marketplace (0.3.0)
+
 - [ ] Local audit log of write operations (JSONL)
 - [ ] `sync` support for version metadata (edit existing versions from the manifest)
 - [x] `sync` for donation links (`[[donations]]`)

@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0] - 2026-09-26
+
+### Added
+- Agent skills in `skills/`: `modrinth-kit` (every operation, safety rules, Modrinth quirks), `modrinth-release`, and `modrinth-page-sync`. The operation list in `modrinth-kit` is generated from the registry, and CI fails if it goes stale.
+- `modrinth skills list|install|update|uninstall [--agent claude,cursor,codex,agents] [--global]` installs the skills bundled with your installed version.
+- A Claude Code plugin and marketplace (`.claude-plugin/`): `/plugin marketplace add TejasLamba2006/modrinth-kit` installs the skills plus the MCP server, and asks for your token (stored in secure storage).
+- Compatible with `npx skills add TejasLamba2006/modrinth-kit`.
+
 ## [0.2.0] - 2026-09-26
 
 Account and social operations (roadmap scope B). All verified against the Modrinth staging API.

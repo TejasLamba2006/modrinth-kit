@@ -1,6 +1,6 @@
 # Guide for coding agents
 
-This file is for AI agents that use modrinth-kit through the CLI or the MCP server.
+This file is for AI agents that use modrinth-kit through the CLI or the MCP server. The same guidance ships as installable skills in `skills/`; see the README section "Agent skills".
 
 ## Rules
 

@@ -110,6 +110,31 @@ For Claude Code: `claude mcp add modrinth -e MODRINTH_TOKEN=mrp_... -- npx -y mo
 | `--read-only` | Only the read tools. |
 | `--staging` | Same tools, pointed at the staging API. |
 
+## Agent skills
+
+Skills tell coding agents what modrinth-kit can do and how to use it safely: releasing, page sync, and every operation. Pick whichever install path suits you:
+
+```sh
+# Claude Code plugin: skills + MCP server in one install (asks for your token)
+/plugin marketplace add TejasLamba2006/modrinth-kit
+/plugin install modrinth-kit@modrinth-kit
+
+# Any agent (Claude Code, Cursor, Codex, OpenCode and 70+ more) via the open skills CLI
+npx skills add TejasLamba2006/modrinth-kit
+
+# From modrinth-kit itself, matching your installed version, works offline
+modrinth skills install                       # ./.claude/skills
+modrinth skills install --agent cursor,codex  # or: claude, cursor, codex, agents
+modrinth skills install --global              # ~/.claude/skills
+modrinth skills update                        # after upgrading modrinth-kit
+```
+
+| Skill | Use it for |
+|---|---|
+| `modrinth-kit` | Every operation, the safety rules, and Modrinth quirks |
+| `modrinth-release` | Build, dry-run and publish a version; set up CI releases |
+| `modrinth-page-sync` | Keep the project page in step with `modrinth.toml` |
+
 ## GitHub Actions
 
 ```yaml

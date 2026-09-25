@@ -1,0 +1,25 @@
+{
+  "name": "modrinth-kit",
+  "description": "Manage Modrinth projects from Claude Code: skills for publishing, page sync and every author operation, plus the modrinth-kit MCP server.",
+  "version": "0.3.0",
+  "author": { "name": "TejasLamba2006", "url": "https://github.com/TejasLamba2006" },
+  "homepage": "https://github.com/TejasLamba2006/modrinth-kit",
+  "repository": "https://github.com/TejasLamba2006/modrinth-kit",
+  "license": "MIT",
+  "keywords": ["modrinth", "minecraft", "mcp", "publish", "release"],
+  "userConfig": {
+    "modrinth_token": {
+      "type": "string",
+      "title": "Modrinth personal access token",
+      "description": "Create one at https://modrinth.com/settings/pats. Read-only tools work without it.",
+      "sensitive": true
+    }
+  },
+  "mcpServers": {
+    "modrinth": {
+      "command": "npx",
+      "args": ["-y", "modrinth-kit@0", "mcp"],
+      "env": { "MODRINTH_TOKEN": "${user_config.modrinth_token}" }
+    }
+  }
+}

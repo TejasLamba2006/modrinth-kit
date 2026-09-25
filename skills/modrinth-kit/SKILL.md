@@ -1,0 +1,92 @@
+---
+name: modrinth-kit
+description: Manage Modrinth projects with the modrinth-kit CLI or MCP tools - create and edit projects, upload versions, gallery, team, organizations, analytics, collections, notifications, moderation threads. Use when the user mentions Modrinth, publishing a Minecraft mod/plugin/modpack/resource pack, editing a Modrinth project page, or replying to Modrinth moderators.
+---
+
+# modrinth-kit
+
+modrinth-kit wraps the whole Modrinth author API. The same operations are available two ways:
+
+- **CLI**: `modrinth <resource> <action> [args] [--flags]`. If it isn't installed, use `npx -y modrinth-kit <...>`.
+- **MCP tools**: if a `modrinth` MCP server is connected, the tool names are the operation names with `.` and `-` replaced by `_` (`project.icon.set` becomes `project_icon_set`). Prefer the MCP tools when they're available.
+
+For releases, use the `modrinth-release` skill. To keep a project page in sync with a file in the repo, use `modrinth-page-sync`.
+
+## Rules
+
+1. **Preview destructive actions, then ask the user.** Destructive operations (the list below) return `{"dryRun":true,"confirmRequired":true,"wouldDo":"..."}` and exit code 4, and change nothing. Show `wouldDo` to the user word for word. Call again with `--yes` (CLI) or `confirm: true` (MCP) only after they explicitly approve. Never add `--yes` on the first attempt.
+2. **Check the token first:** run `modrinth auth whoami`. Tokens come from `MODRINTH_TOKEN` or `modrinth auth login --token <pat>`. Never print, echo, or write the token anywhere.
+3. **Look up valid values; don't guess them.** Use `modrinth tag list <category|loader|game_version|license|donation_platform|report_type|project_type>`.
+4. **Read errors.** Errors go to stderr as `{"error":{code,status,message,hint}}`. On `auth` errors, the `hint` names the missing token scope or says the account's email needs verifying. Tell the user rather than retrying.
+5. **Test risky workflows on staging.** Add `--staging` to target `staging-api.modrinth.com` with a staging token (`MODRINTH_STAGING_TOKEN`).
+
+## CLI conventions
+
+- Output is JSON on stdout. Add `--pretty` for indented output.
+- Exit codes: 0 ok, 1 bad input, 2 API or network error, 3 auth, 4 confirmation required.
+- Array flags accept either commas or repeated flags: `--loaders paper,folia`.
+- Any flag value can be read from a file with `@path`: `--body @README.md`.
+- `--input '{"...":...}'` passes the whole input as JSON. Use it for nested values such as `file_types` or `disclosures`.
+- `modrinth help <resource> <action>` shows the flags for one operation. `modrinth ops` lists every operation as JSON.
+
+## Modrinth quirks
+
+- On the v2 API, plugins use `project_type: mod`. The version loaders (`paper`, `spigot`, `folia`, `velocity`...) are what make a project a plugin.
+- Plugins have no client or server side. Don't pass `client_side`/`server_side` when updating a plugin; Modrinth rejects it.
+- In modrinth-kit, `summary` is the short text shown in search (the API calls it `description`). `body` is the long markdown page.
+- New projects are always created as drafts. `project submit` sends a draft for moderation, and it becomes public once approved.
+- Uploaded jars are validated. Paper plugins need a `plugin.yml` or `paper-plugin.yml`.
+- Gallery images are identified by their `url`, which you get from `gallery list`. Modrinth rejects duplicate images.
+- Modrinth removed scheduling of projects and versions, so there is no schedule operation.
+- Organizations, collections, analytics, and disclosures use Modrinth's v3 API, which is unstable upstream.
+
+## Common tasks
+
+| Goal | Command |
+|---|---|
+| Who am I / list my projects | `modrinth auth whoami`, `modrinth user projects` |
+| Create a draft project | `modrinth project create --slug my-plugin --title "My Plugin" --summary "..." --license-id MIT --client-side unsupported --server-side required` |
+| Edit the page | `modrinth project update my-plugin --summary "..." --body @docs/modrinth.md --source-url https://...` |
+| Icon / screenshots | `modrinth project icon set my-plugin icon.png`, `modrinth gallery add my-plugin shot.png --title "Menu" --featured` |
+| Upload a version | `modrinth version create my-plugin --version-number 1.2.0 --files build/libs/x.jar --loaders paper --game-versions 1.21.11 --changelog @CHANGES.md` |
+| Check for updates of a jar | `modrinth version latest --hashes <sha1> --loaders paper --game-versions 1.21.11` |
+| Team | `modrinth team invite my-plugin alice`, `modrinth team member update my-plugin alice --permissions UPLOAD_VERSION,EDIT_BODY` |
+| Answer a moderator | `modrinth thread get --project my-plugin`, then `modrinth thread send --project my-plugin --body "..."` |
+| Downloads and views | `modrinth analytics get --start 2026-09-01T00:00:00Z --metrics project_downloads,project_views` |
+| Accept a team invite | `modrinth notification list`, then `modrinth team join <project>` |
+
+## All operations
+
+<!-- ops:start (generated by `npm run gen:docs`; do not edit) -->
+Run `modrinth help <op>` for flags. MCP tool = name with `_`.
+
+**auth**: `auth whoami`
+
+**user**: `user projects`, `user get`, `user update`, `user icon set`, `user icon delete` (destructive), `user follows`
+
+**search**: `search`
+
+**tag**: `tag list`
+
+**project**: `project get`, `project get-many`, `project check-slug`, `project dependencies`, `project create`, `project update`, `project submit` (destructive), `project delete` (destructive), `project icon set`, `project icon delete` (destructive), `project bulk-update`, `project disclosures get`, `project disclosures set`
+
+**gallery**: `gallery list`, `gallery add`, `gallery update`, `gallery delete` (destructive)
+
+**version**: `version list`, `version get`, `version from-hash`, `version create`, `version update`, `version file add`, `version file delete` (destructive), `version delete` (destructive), `version from-hashes`, `version latest`
+
+**team**: `team members`, `team invite`, `team member update`, `team member remove` (destructive), `team transfer-ownership` (destructive), `team join`
+
+**org**: `org get`, `org projects`, `org create`, `org update`, `org icon set`, `org project add`, `org project remove` (destructive), `org delete` (destructive)
+
+**analytics**: `analytics get`
+
+**follow**: `follow add`, `follow remove`
+
+**notification**: `notification list`, `notification get`, `notification read`, `notification delete` (destructive)
+
+**report**: `report create` (destructive), `report list`, `report get`, `report update`
+
+**thread**: `thread get`, `thread send`, `thread message delete` (destructive)
+
+**collection**: `collection list`, `collection get`, `collection create`, `collection update`, `collection icon set`, `collection delete` (destructive)
+<!-- ops:end -->

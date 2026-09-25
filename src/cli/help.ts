@@ -24,6 +24,8 @@ export function mainHelp(): string {
     "  auth login --token <pat>             Store a token (also: auth logout)",
     "  mcp [--read-only] [--allow read,write]  Start the MCP server on stdio",
     "  ops                                  List all operations as JSON",
+    "  skills <list|install|update|uninstall> [--agent claude,cursor,codex,agents] [--global]",
+    "                                       Install agent skills describing modrinth-kit",
     "",
   ];
   for (const [g, list] of groups) {

@@ -1,0 +1,16 @@
+{
+  "name": "modrinth-kit",
+  "owner": { "name": "TejasLamba2006", "url": "https://github.com/TejasLamba2006" },
+  "metadata": {
+    "description": "Modrinth tooling for Claude Code: skills and an MCP server for publishing and managing Modrinth projects."
+  },
+  "plugins": [
+    {
+      "name": "modrinth-kit",
+      "source": "./",
+      "description": "Skills for releasing to Modrinth, syncing project pages, and every author operation, plus the modrinth-kit MCP server.",
+      "category": "development",
+      "homepage": "https://github.com/TejasLamba2006/modrinth-kit"
+    }
+  ]
+}

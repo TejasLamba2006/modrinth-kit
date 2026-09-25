@@ -10,7 +10,7 @@ import { VERSION } from "../version.js";
 import { coerce, keyToFlag, parseArgv } from "./args.js";
 import { commandHelp, mainHelp } from "./help.js";
 
-const GLOBAL_BOOL = ["staging", "pretty", "yes", "help", "dry_run", "prune", "force", "read_only"];
+const GLOBAL_BOOL = ["staging", "pretty", "yes", "help", "dry_run", "prune", "force", "read_only", "global"];
 
 async function main(argv: string[]): Promise<number> {
   if (argv[0] === "--version" || argv[0] === "-v") {
@@ -39,6 +39,15 @@ async function main(argv: string[]): Promise<number> {
     case "ops":
       out(ops.map((o) => ({ name: o.name, tier: o.tier, summary: o.summary })));
       return 0;
+    case "skills": {
+      const sk = await import("../skills.js");
+      const opts = { agents: parsed.flags.get("agent")?.flatMap((v) => v.split(",")), global: bool("global"), force: bool("force") };
+      if (rest[0] === "install") return emit(out, await sk.installSkills(opts));
+      if (rest[0] === "update") return emit(out, await sk.installSkills({ ...opts, force: true }));
+      if (rest[0] === "uninstall") return emit(out, await sk.uninstallSkills(opts));
+      if (!rest[0] || rest[0] === "list") return emit(out, await sk.listSkills());
+      throw new ModrinthError("usage", "Usage: modrinth skills <list|install|update|uninstall> [--agent claude,cursor,codex,agents] [--global]");
+    }
     case "mcp": {
       const { startMcp } = await import("../mcp/server.js");
       await startMcp({ ctx, readOnly: bool("read_only"), allow: parsed.flags.get("allow")?.flatMap((v) => v.split(",")) });

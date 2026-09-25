@@ -11,4 +11,5 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npx tsx scripts/gen-docs.ts --check
+      - run: npx -y @anthropic-ai/claude-code@latest plugin validate . || echo "::warning::plugin validate unavailable"
       - run: npm run build && node dist/cli/index.js ops > /dev/null
