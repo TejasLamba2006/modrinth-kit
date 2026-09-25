@@ -1,10 +1,14 @@
 # modrinth-kit
 
+![modrinth-kit](docs/media/hero.png)
+
 A single tool for managing Modrinth projects from the terminal, from AI coding agents, and from CI.
 
 - **CLI**: `modrinth <command>` covers what you can do on the website as a project author and user: create and edit projects, manage the gallery, upload versions, manage team members and organizations, read analytics, reply to moderators, and manage collections, follows, notifications, and reports.
 - **MCP server**: `modrinth mcp` exposes the same operations as tools for Claude Code, Claude Desktop, Cursor, and other MCP clients.
 - **CI**: check a `modrinth.toml` into your repo, then use `modrinth sync` to keep the project page in step with it and `modrinth publish` to release versions. The same commands run in the included GitHub Action and in any other CI.
+
+![How it works](docs/media/architecture.png)
 
 All three share one core, and the [operation reference](docs/reference/README.md) is generated from that same core, so the docs always match what the tool does.
 
@@ -63,6 +67,8 @@ modrinth help version create
 | 4 | Confirmation required; the output is a preview and nothing was changed |
 
 ### Safety
+
+![Safe for AI agents](docs/media/agent-safety.png)
 
 Every operation is classed as `read`, `write`, or `destructive`. Destructive operations are deletions, ownership transfers, and status changes that make a project public or hide it. Without `--yes` they change nothing: they print `{"dryRun":true,"confirmRequired":true,"wouldDo":"..."}` and exit with code 4. Add `--yes` to actually run them.
 

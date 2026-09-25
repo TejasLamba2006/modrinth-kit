@@ -13,8 +13,9 @@
     "README.md",
     "AGENTS.md",
     "ROADMAP.md",
-    "docs",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "docs/*.md",
+    "docs/reference"
   ],
   "engines": {
     "node": ">=22"
