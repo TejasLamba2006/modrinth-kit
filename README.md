@@ -1,6 +1,6 @@
 # modrinth-kit
 
-![modrinth-kit](docs/media/hero.png)
+![modrinth-kit](docs/media/discord-banner.png)
 
 A single tool for managing Modrinth projects from the terminal, from AI coding agents, and from CI.
 
@@ -11,6 +11,8 @@ A single tool for managing Modrinth projects from the terminal, from AI coding a
 ![How it works](docs/media/architecture.png)
 
 All three share one core, and the [operation reference](docs/reference/README.md) is generated from that same core, so the docs always match what the tool does.
+
+![Compared](docs/media/comparison.png)
 
 ## Install
 
